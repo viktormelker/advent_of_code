@@ -1,9 +1,6 @@
 use std::fs;
 
-struct NumberPair {
-    first: i32,
-    second: i32,
-}
+struct NumberPair (i32, i32);
 
 fn main() {
     let sum_to_find = 2020;
@@ -13,9 +10,9 @@ fn main() {
 
     let pair = find_sum_parts(numbers, sum_to_find);
 
-    println!("Numbers {} and {} added up to the sum {}", pair.first, pair.second, sum_to_find);
+    println!("Numbers {} and {} added up to the sum {}", pair.0, pair.1, sum_to_find);
 
-    println!("The multiplied value is {}", pair.first * pair.second);
+    println!("The multiplied value is {}", pair.0 * pair.1);
 }
 
 fn get_numbers(filename: &str) -> Vec<i32> {
@@ -29,9 +26,21 @@ fn get_numbers(filename: &str) -> Vec<i32> {
 fn find_sum_parts(numbers: Vec<i32>, sum: i32) -> NumberPair {
     /* TODO: Implement this function */
 
-    let result = NumberPair {
-        first: 1,
-        second: 2,
-    };
-    result
+    for () {
+        let number_to_look_for = sum - number
+
+        if (is_in_list(number_to_look_for, numbers) {
+            return NumberPair(number, number_to_look_for)
+        }
+    }
+
+    NumberPair(1, 2)
+}
+
+fn is_in_list(number: i32, list: Vec<i32>) -> bool {
+    if number < 0 {
+        // Only positive values in the list
+        return false;
+    }
+    list.iter().any(|&current| current==number)
 }
