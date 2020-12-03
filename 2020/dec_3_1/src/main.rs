@@ -15,25 +15,50 @@ fn main() {
     let tree_map = read_file("data/input.txt");
 
     let start_position = Position(1,1);
-    let slope = Slope {
-        right: 3,
-        down: 1
-    };
+    let slopes = [
+        Slope {
+            right: 1,
+            down: 1
+        },
+        Slope {
+            right: 3,
+            down: 1
+        },
+        Slope {
+            right: 5,
+            down: 1
+        },
+        Slope {
+            right: 7,
+            down: 1
+        },
+        Slope {
+            right: 1,
+            down: 2
+        },
+    ];
 
-    let last_row_index = tree_map.lines().count() as u64;
+    let trees = slopes.iter().map(|slope| count_slope_hits(start_position, *slope, &tree_map));
+
+    for trees_hit in trees {
+        println!("Hit trees on the way down {}", trees_hit);
+    }
+
+}
+
+fn count_slope_hits(start_position: Position, slope: Slope, map: &str) -> u64 {
+    let last_row_index = map.lines().count() as u64;
     let mut trees_hit = 0;
     let mut current_position: Position;
 
     for i in 1..last_row_index/slope.down {  // Is this working if slope.down is not 1?
         current_position = get_position(start_position, slope, i);
-        if is_tree(current_position, &tree_map) {
+        if is_tree(current_position, &map) {
             trees_hit += 1;
         }
     }
-
-    println!("Hit {} trees on the way down", trees_hit);
+    trees_hit
 }
-
 
 fn read_file(filename: &str) -> String {
     let contents = fs::read_to_string(filename)
