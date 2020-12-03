@@ -41,9 +41,9 @@ fn get_policy(pw_entry: &str) -> PasswordPolicy {
 
 
     PasswordPolicy {
-        letter: letter,
-        min: min_string,
-        max: max_string,
+        letter: letter.chars().next().unwrap(),
+        min: min_string.parse::<u32>().unwrap(),
+        max: max_string.parse::<u32>().unwrap(),
     }
 }
 
@@ -61,5 +61,5 @@ fn validate_password(password: &str, policy: PasswordPolicy) -> bool {
 }
 
 fn count_occurrances(letter: char, text: &str) -> u32 {
-   text.matches(letter).count()
+   text.matches(letter).count() as u32
 }
