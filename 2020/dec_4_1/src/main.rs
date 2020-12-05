@@ -32,11 +32,9 @@ impl Passport {
 }
 
 fn main() {
-
     let passport_input = read_file("./data/input.txt");
     let passports = parse_passports(&passport_input);
     let mut valid_passports = 0;
-
 
     for passport in passports.iter() {
         passport.print();
