@@ -5,7 +5,7 @@ const COLUMN_INDICATOR_LENGTH: usize = 3;
 const SEATS_PER_ROW: u64 = 8;
 
 const MAX_ROWS: u64 = 127;
-const MAX_COLUMNS: u64 = SEATS_PER_ROW;
+const MAX_COLUMNS: u64 = SEATS_PER_ROW - 1;
 const UPPER_HALF_CHARS: [char; 2] = ['B', 'R'];
 
 enum BinaryIndicator {
