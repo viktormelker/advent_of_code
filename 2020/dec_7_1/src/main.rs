@@ -8,7 +8,6 @@ const CONTENT_STR_QUANTITY_START_POS: usize = 0;
 const CONTENT_STR_COLOR_START_POS: usize = 1;
 const CONTENT_STR_COLOR_END_POS: usize = 3;
 
-
 #[derive(Debug)]
 struct BagContent {
     quantity: u64,
@@ -55,10 +54,11 @@ impl Bag {
         }
     }
 
-    fn can_contain(&self, bag_color: &str, bags: &HashMap<String, &Bag>) -> bool {
+    fn can_contain(&self, bag_color: &str, bags: &HashMap<&str, &Bag>) -> bool {
+        println!("Checking if bag '{}' contains {} ", self.color, bag_color);
         (self.contents
             .iter()
-            .filter(|bc| bc.bag_color == bag_color || bags.get(bag_color).unwrap().can_contain(bag_color, bags))
+            .filter(|bc| bc.bag_color == bag_color|| bags.get(bag_color).unwrap().can_contain(bag_color, bags))
             .count()) > 0
     }
 }
@@ -73,10 +73,11 @@ fn main() {
     let bag_map = HashMap::from(
         bags
         .iter()
-        .map(|bag| (bag.color, bag))
+        .map(|bag| (&bag.color[..], bag))
         .into_iter().collect()
     );
 
+    println!("Created a hashmap to search for bags: {:?}", bag_map);
     let matching_outer_bags: Vec<&Bag> = bags
         .iter()
         .filter(|bag| bag.can_contain(&bag_to_check, &bag_map))
