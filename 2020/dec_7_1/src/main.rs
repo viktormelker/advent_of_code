@@ -1,4 +1,5 @@
 use std::fs;
+use std::collections::HashMap;
 
 const COLOR_START_POS: usize = 0;
 const COLOR_END_POS: usize = 2;
@@ -54,8 +55,11 @@ impl Bag {
         }
     }
 
-    fn can_contain(&self, bag_color: &str) -> bool {
-        self.contents.iter().filter(|bc| bc.bag_color == bag_color).count() > 0
+    fn can_contain(&self, bag_color: &str, bags: &HashMap<String, &Bag>) -> bool {
+        (self.contents
+            .iter()
+            .filter(|bc| bc.bag_color == bag_color || bags.get(bag_color).unwrap().can_contain(bag_color, bags))
+            .count()) > 0
     }
 }
 
@@ -66,10 +70,16 @@ fn main() {
     println!("Found {} rules", rules.len());
 
     let bags: Vec<Bag> = rules.iter().map(|rule| Bag::parse_rule(rule)).collect();
+    let bag_map = HashMap::from(
+        bags
+        .iter()
+        .map(|bag| (bag.color, bag))
+        .into_iter().collect()
+    );
 
     let matching_outer_bags: Vec<&Bag> = bags
         .iter()
-        .filter(|bag| bag.can_contain(&bag_to_check))
+        .filter(|bag| bag.can_contain(&bag_to_check, &bag_map))
         .collect();
 
     for bag in bags.iter() {
