@@ -27,7 +27,6 @@ impl BagContent {
                 bag_color: color
             })
         }
-
     }
 }
 
@@ -55,19 +54,23 @@ impl Bag {
     }
 
     fn can_contain(&self, bag_color: &str, bags: &HashMap<&str, &Bag>) -> bool {
-        println!("Checking if bag '{}' contains {} ", self.color, bag_color);
+        //println!("Checking if bag '{}' contains {} ", self.color, bag_color);
+        if *bag_color == self.color {
+            return false
+        }
+
         (self.contents
             .iter()
-            .filter(|bc| bc.bag_color == bag_color|| bags.get(bag_color).unwrap().can_contain(bag_color, bags))
+            .filter(|bc| bc.bag_color == bag_color || bags.get(&bc.bag_color[..]).unwrap().can_contain(bag_color, bags))
             .count()) > 0
     }
 }
 
 fn main() {
     let bag_to_check = String::from("shiny gold");
-    let input = read_file("./data/test_input.txt");
+    let input = read_file("./data/input.txt");
     let rules: Vec<&str> = input.split("\n").filter(|rule| *rule != "").collect();
-    println!("Found {} rules", rules.len());
+    // println!("Found {} rules", rules.len());
 
     let bags: Vec<Bag> = rules.iter().map(|rule| Bag::parse_rule(rule)).collect();
     let bag_map = HashMap::from(
@@ -77,15 +80,15 @@ fn main() {
         .into_iter().collect()
     );
 
-    println!("Created a hashmap to search for bags: {:?}", bag_map);
+    // println!("Created a hashmap to search for bags: {:?}", bag_map);
     let matching_outer_bags: Vec<&Bag> = bags
         .iter()
         .filter(|bag| bag.can_contain(&bag_to_check, &bag_map))
         .collect();
 
-    for bag in bags.iter() {
-        println!("Found a bag: {:?}", bag);
-    }
+    //for bag in bags.iter() {
+    //    println!("Found a bag: {:?}", bag);
+    //}
     println!("Found {:?} bags that could contain a '{}' bag", matching_outer_bags.len(), bag_to_check);
 
 }
