@@ -34,7 +34,7 @@ impl BagContent {
 #[derive(Debug)]
 struct Bag {
     color: String,
-    contains: Vec<BagContent>
+    contents: Vec<BagContent>
 }
 impl Bag {
     fn parse_rule(rule: &str) -> Bag {
@@ -50,20 +50,32 @@ impl Bag {
 
         Bag {
             color: String::from(color),
-            contains: contents
+            contents: contents
         }
+    }
+
+    fn can_contain(&self, bag_color: &str) -> bool {
+        self.contents.iter().filter(|bc| bc.bag_color == bag_color).count() > 0
     }
 }
 
 fn main() {
+    let bag_to_check = String::from("shiny gold");
     let input = read_file("./data/test_input.txt");
     let rules: Vec<&str> = input.split("\n").filter(|rule| *rule != "").collect();
     println!("Found {} rules", rules.len());
 
     let bags: Vec<Bag> = rules.iter().map(|rule| Bag::parse_rule(rule)).collect();
+
+    let matching_outer_bags: Vec<&Bag> = bags
+        .iter()
+        .filter(|bag| bag.can_contain(&bag_to_check))
+        .collect();
+
     for bag in bags.iter() {
         println!("Found a bag: {:?}", bag);
     }
+    println!("Found {:?} bags that could contain a '{}' bag", matching_outer_bags.len(), bag_to_check);
 
 }
 
