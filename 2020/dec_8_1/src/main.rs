@@ -94,18 +94,27 @@ impl FromStr for Instruction {
 fn main() {
     let input = read_file("./data/input.txt");
     let mut instructions: Vec<Instruction> = input.lines().map(|line| line.parse::<Instruction>().unwrap()).collect();
+
+    let result = run(& mut instructions);
+
+    println!("Accumulated value was {}!", result.1);
+    println!("loop was infinite={}!", result.0);
+}
+
+fn run(instructions: &mut Vec<Instruction>) -> (bool, i64) {
     let mut current_pos: usize = 0;
     let mut sum: i64 = 0;
     let mut instruction: Instruction;
+    let mut infinite: bool = false;
 
     loop {
         instruction = instructions.remove(current_pos);
         if instruction.visited {
             println!("Visited instruction {} for the second time", current_pos);
+            infinite = true;
             break;
         }
         else {
-            println!("Visited instruction at position {}", current_pos);
             instruction.visited = true;
         }
         instructions.insert(current_pos, instruction);
@@ -124,7 +133,7 @@ fn main() {
         }
     }
 
-    println!("Accumulated value was {}!", sum);
+    (infinite, sum)
 }
 
 
