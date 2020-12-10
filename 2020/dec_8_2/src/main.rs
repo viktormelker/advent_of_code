@@ -92,7 +92,7 @@ impl FromStr for Instruction {
 }
 
 fn main() {
-    let input = read_file("./data/test_input.txt");
+    let input = read_file("./data/input.txt");
     let instructions: Vec<Instruction> = input.lines().map(|line| line.parse::<Instruction>().unwrap()).collect();
     let potential_switch_indices: Vec<bool> = instructions.iter().map(|instruction| instruction.identifier != Operation::ACCUMULATE).collect();
     let mut result: (bool, i64) = (true, 0);
@@ -100,11 +100,9 @@ fn main() {
 
     for (i, switch) in potential_switch_indices.iter().enumerate() {
         if *switch {
-            // println!("Should switch index {} = {}", i, switch);
             temp_instructions = instructions.clone();
             println!("Attempting to switch instruction on index {}", i);
             let bad_instruction: Instruction = temp_instructions.remove(i);
-            //println!("Switched instruction {:?}", bad_instruction);
             let good_instruction: Instruction = Instruction {
                 identifier: {
                     if bad_instruction.identifier == Operation::JUMP {
@@ -120,6 +118,7 @@ fn main() {
             result = run(& mut temp_instructions);
             if !result.0 {
                 println!("Found faulty statement on index {}", i);
+                break;
             }
             println!("------------ Finished for this time ----------- ");
         }
@@ -143,7 +142,6 @@ fn run(instructions: &mut Vec<Instruction>) -> (bool, i64) {
             break;
         }
         else {
-            //println!("Visited instruction {}", current_pos);
             instruction.visited = true;
         }
         instructions.insert(current_pos, instruction);
