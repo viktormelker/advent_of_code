@@ -92,7 +92,7 @@ impl FromStr for Instruction {
 }
 
 fn main() {
-    let input = read_file("./data/test_input.txt");
+    let input = read_file("./data/input.txt");
     let mut instructions: Vec<Instruction> = input.lines().map(|line| line.parse::<Instruction>().unwrap()).collect();
     let mut current_pos: usize = 0;
     let mut sum: i64 = 0;
@@ -100,7 +100,7 @@ fn main() {
 
     loop {
         instruction = instructions.remove(current_pos);
-        if instruction.visited  || sum > 100 {
+        if instruction.visited {
             println!("Visited instruction {} for the second time", current_pos);
             break;
         }
