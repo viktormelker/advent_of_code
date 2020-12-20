@@ -15,9 +15,36 @@ struct Seat {
 }
 impl Seat {
     fn next_state(&self, seats: Vec<SeatRow>) -> SeatState {
-        let neighbours = self.get_neighbours(seats);
-        // TODO: Implement
-        SeatState::EMPTY
+        let neighbours = self.get_neighbours(&seats);
+        let occupied_neighbours = neighbours
+            .iter()
+            .fold(0, |acc, seat| {
+                match seat{
+                    Some(seat) => {
+                        if seat.state == SeatState::OCCUPIED {
+                            return acc + 1;
+                        }
+                        else { acc }
+                    },
+                    None => return acc
+                }
+            });
+
+        match self.state {
+            SeatState::EMPTY => {
+                if occupied_neighbours == 0 {
+                    return SeatState::OCCUPIED
+                }
+                else { return self.state}
+            }
+            SeatState::OCCUPIED => {
+                if occupied_neighbours >= 4 {
+                    return SeatState::EMPTY
+                }
+                else { return self.state }
+            }
+            SeatState::FLOOR => return SeatState::FLOOR
+        }
     }
 
     fn from_char(input: char, row: usize, column: usize) -> Seat {
@@ -29,14 +56,14 @@ impl Seat {
         }
     }
 
-    fn get_neighbours(&self, seats: Vec<SeatRow>) -> Vec<Option<&Seat>> {
+    fn get_neighbours(&self, seats: &Vec<SeatRow>) -> Vec<Option<&Seat>> {
         let mut result: Vec<Option<&Seat>> =  vec![];
 
-        let front_row= seats.get(self.row - 1);
-        let current_row = seats.get(self.row);
-        let back_row = seats.get(self.row + 1);
-
-        let rows = vec![front_row, current_row, back_row];
+        let rows = vec![
+            seats.get(self.row - 1),
+            seats.get(self.row),
+            seats.get(self.row + 1)
+        ];
 
         for row_i in rows {
             match row_i {
@@ -54,7 +81,6 @@ impl Seat {
                 None => continue
             }
         }
-        // TODO: Implement
         return result;
     }
 
