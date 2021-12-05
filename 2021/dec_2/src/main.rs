@@ -23,6 +23,7 @@ impl fmt::Display for ParseEnumError {
 struct SubmarinePosition {
     horizontal_position: u32,
     depth: u32,
+    aim: u32,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -44,15 +45,12 @@ impl FromStr for SubmarineCommand {
 
         match word_tuple {
             ("forward", distance) => {
-                println!("Forward!");
                 return Ok(SubmarineCommand::Forward(distance.parse::<u32>().unwrap()));
             }
             ("up", distance) => {
-                println!("up");
                 return Ok(SubmarineCommand::Up(distance.parse::<u32>().unwrap()));
             }
             ("down", distance) => {
-                println!("down");
                 return Ok(SubmarineCommand::Down(distance.parse::<u32>().unwrap()));
             }
             _ => return Err(ParseEnumError),
@@ -76,11 +74,12 @@ fn main() {
     let start_position: SubmarinePosition = SubmarinePosition {
         horizontal_position: 0,
         depth: 0,
+        aim: 0
     };
 
     let position = simulate(start_position, commands);
 
-    println!("Ended up on position: {}, depth:{}", position.horizontal_position, position.depth)
+    println!("Ended up on position: {}, depth: {}", position.horizontal_position, position.depth)
 }
 
 fn simulate(
