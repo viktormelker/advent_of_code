@@ -33,6 +33,80 @@ enum SubmarineCommand {
     Down(u32),
 }
 
+/*struct Context<S> {
+    strategy: S,
+}
+
+impl<S> Context<S>
+where
+    S: MoveStrategy,
+{
+    fn move_sub(
+        &self,
+        start_pos: SubmarinePosition,
+        command: SubmarineCommand,
+    ) -> SubmarinePosition {
+        self.strategy.execute(start_pos, command)
+    }
+}*/
+
+trait MoveStrategy {
+    fn execute(
+        &self,
+        start_pos: SubmarinePosition,
+        command: SubmarineCommand,
+    ) -> SubmarinePosition;
+}
+
+struct SimpleMoveStrategy;
+
+impl MoveStrategy for SimpleMoveStrategy {
+    fn execute(
+        &self,
+        start_pos: SubmarinePosition,
+        command: SubmarineCommand,
+    ) -> SubmarinePosition {
+        let  mut position = start_pos.clone();
+        match command {
+            SubmarineCommand::Forward(distance) => {
+                position.horizontal_position = position.horizontal_position + distance;
+            },
+            SubmarineCommand::Up(distance) => {
+                position.depth = position.depth - distance;
+            },
+            SubmarineCommand::Down(distance) => {
+                position.depth = position.depth + distance;
+            },
+        }
+        position
+    }
+}
+
+struct AdvancedMoveStrategy;
+
+impl MoveStrategy for AdvancedMoveStrategy {
+    fn execute(
+        &self,
+        start_pos: SubmarinePosition,
+        command: SubmarineCommand,
+    ) -> SubmarinePosition {
+        let mut position = start_pos.clone();
+        match command {
+            SubmarineCommand::Forward(distance) => {
+                position.horizontal_position = position.horizontal_position + distance;
+                position.depth = position.depth + position.aim * distance;
+            },
+            SubmarineCommand::Up(distance) => {
+                position.aim = position.aim - distance;
+            },
+            SubmarineCommand::Down(distance) => {
+                position.aim = position.aim + distance;
+            },
+        }
+        position
+    }
+}
+
 impl FromStr for SubmarineCommand {
     type Err = ParseEnumError;
 
@@ -61,9 +135,11 @@ impl FromStr for SubmarineCommand {
 fn main() {
     let args = Cli::from_args();
     let input = read_file(args.path);
+    let move_strategy;
 
     match args.version {
-        1 => println!("First star of the challange"),
+        1 => move_strategy = AdvancedMoveStrategy,
+        2 => move_strategy = AdvancedMoveStrategy,
         _ => panic!("Invalid version"),
     }
 
@@ -74,33 +150,26 @@ fn main() {
     let start_position: SubmarinePosition = SubmarinePosition {
         horizontal_position: 0,
         depth: 0,
-        aim: 0
+        aim: 0,
     };
 
-    let position = simulate(start_position, commands);
+    let position = simulate(start_position, commands, &move_strategy);
 
-    println!("Ended up on position: {}, depth: {}", position.horizontal_position, position.depth)
+    println!(
+        "Ended up on position: {}, depth: {}",
+        position.horizontal_position, position.depth
+    )
 }
 
 fn simulate(
     start_position: SubmarinePosition,
     commands: Vec<SubmarineCommand>,
+    move_strategy: &impl MoveStrategy,
 ) -> SubmarinePosition {
     let mut position = start_position.clone();
 
     for command in commands {
-        match command {
-            SubmarineCommand::Forward(distance) => {
-                position.horizontal_position = position.horizontal_position + distance;
-            },
-            SubmarineCommand::Up(distance) => {
-                position.depth = position.depth - distance;
-            },
-            SubmarineCommand::Down(distance) => {
-                position.depth = position.depth + distance;
-            },
-        }
-
+        position = move_strategy.execute(position, command);
     }
 
     position
