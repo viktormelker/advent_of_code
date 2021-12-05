@@ -2,12 +2,10 @@ use std::fs;
 use structopt::StructOpt;
 
 mod move_strategy;
-use crate::move_strategy::AdvancedMoveStrategy;
-use crate::move_strategy::MoveStrategy;
+use crate::move_strategy::*;
 
 mod submarine;
-use crate::submarine::SubmarineCommand;
-use crate::submarine::SubmarinePosition;
+use crate::submarine::*;
 
 #[derive(StructOpt)]
 struct Cli {
@@ -17,32 +15,15 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
-/*struct Context<S> {
-    strategy: S,
-}
-
-impl<S> Context<S>
-where
-    S: MoveStrategy,
-{
-    fn move_sub(
-        &self,
-        start_pos: SubmarinePosition,
-        command: SubmarineCommand,
-    ) -> SubmarinePosition {
-        self.strategy.execute(start_pos, command)
-    }
-}*/
-
 
 fn main() {
     let args = Cli::from_args();
     let input = read_file(args.path);
-    let move_strategy;
+    let move_strategy: MoveStrategy;
 
     match args.version {
-        1 => move_strategy = AdvancedMoveStrategy,
-        2 => move_strategy = AdvancedMoveStrategy,
+        1 => move_strategy = MoveStrategy::Simple(SimpleMoveStrategy),
+        2 => move_strategy = MoveStrategy::Advanced(AdvancedMoveStrategy),
         _ => panic!("Invalid version"),
     }
 
@@ -56,7 +37,7 @@ fn main() {
         aim: 0,
     };
 
-    let position = simulate(start_position, commands, &move_strategy);
+    let position = simulate(start_position, commands, move_strategy);
 
     println!(
         "Ended up on position: {}, depth: {}",
@@ -67,7 +48,7 @@ fn main() {
 fn simulate(
     start_position: SubmarinePosition,
     commands: Vec<SubmarineCommand>,
-    move_strategy: &impl MoveStrategy,
+    move_strategy: MoveStrategy,
 ) -> SubmarinePosition {
     let mut position = start_position.clone();
 

@@ -1,8 +1,21 @@
-use crate::submarine::SubmarineCommand;
-use crate::submarine::SubmarinePosition;
+use crate::submarine::*;
 
+pub enum MoveStrategy {
+    Simple(SimpleMoveStrategy),
+    Advanced(AdvancedMoveStrategy),
+}
 
-pub trait MoveStrategy {
+impl MoveSubmarine for MoveStrategy {
+    fn execute(&self, start_pos: SubmarinePosition, command: SubmarineCommand) -> SubmarinePosition {
+        use MoveStrategy::*;
+        match self {
+            Simple(strategy) => strategy.execute(start_pos, command),
+            Advanced(strategy) => strategy.execute(start_pos, command),
+        }
+    }
+}
+
+pub trait MoveSubmarine {
     fn execute(
         &self,
         start_pos: SubmarinePosition,
@@ -12,7 +25,7 @@ pub trait MoveStrategy {
 
 pub struct SimpleMoveStrategy;
 
-impl MoveStrategy for SimpleMoveStrategy {
+impl MoveSubmarine for SimpleMoveStrategy {
     fn execute(
         &self,
         start_pos: SubmarinePosition,
@@ -36,7 +49,7 @@ impl MoveStrategy for SimpleMoveStrategy {
 
 pub struct AdvancedMoveStrategy;
 
-impl MoveStrategy for AdvancedMoveStrategy {
+impl MoveSubmarine for AdvancedMoveStrategy {
     fn execute(
         &self,
         start_pos: SubmarinePosition,
